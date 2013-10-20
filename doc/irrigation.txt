@@ -1,0 +1,124 @@
++---------+                +--------+
+|  Client |                |        |
+|         | <--[ JSON ]--> | Server | ==> GPIO
+| Browser |                |        |
++---------+                +--------+
+                               ^
+			       \----+ cmdline interface (sends receives json)
+                                      REST ?
+
+                           Config { }   = Irrigation controller config (IP, Port, Pswd, Zones, etc)
+                           Status { }   = Current status of the Irrigation controller (ext conditions, scheduled program and zone status).
+                           Programs { } = Program to run (Zone order, run times and conditions)
+                           ExtCnd { }   = from the extcnd.json file, variables that are set externally
+
+External files:
+irrigation.json - controller config
+programs.json - programs list
+extcnd.json - external conditions file.
+
+Client - the UI, takes care of presentation (parse-n-present)
+Server - maintains statuses, crontabs and scheduler, and users preferences
+
+  irrigation.js - A node server to handle turning on and off the GPIO ports
+
+  This program initially started out as a bunch of ideas to deal with scheduling
+  turning on and of the GPIO ports on a (Raspberry Pi or Beagle or some such)
+  server running node.js.
+
+ Startup
+ 1) Read in the irrigation configuration (a json file).
+ 2) Read in the programs file (a json file)
+ 3) Read in the external conditions file (a json file)
+ 2) Scheduling - read the progams and use node-sched or node-cron to deal with scheduling
+ 4) handle the requests from the user
+
+stuctures
+
+// Built in, not read in
+status {
+  zones [
+    { name, status },
+    { name, status },
+    ...
+  ]
+  current {
+    program
+    step
+    step remaining
+    next step
+    program remaining
+  }
+  next {
+    program
+    due
+    length
+  }
+}
+
+// irrigation.json (needs to be updated
+config {
+    "port" : 8022,	  // Server's IP Port
+    "ip" : "0.0.0.0",	  // Server's IP address (IPv4 for now)
+    "version": "1.0",	  // JSON version
+    "zones":[		  // These are the zones to configure for
+      {			  // this needs a bit of work to make it more flexible
+        "name": "Zone 1",
+        "zone": "1",
+        "state": "Off",
+        "timer": "0.0"
+      },
+      :
+    ],
+
+    "_00: ": "Checked with Json Parser Online", // Junk, not needed just for test
+    "_02: ": "1.0",
+    "_03: ": "1.0",
+    "_04: ": "1.0",
+    "_05: ": "1.0",
+    "url": "http://json.parser.online.fr/",     // The ref page I use to check the json layout
+
+    "ready" : 1			                // An easy way to tell if it's loaded.
+}
+
+//  JSON array of programs
+Programs [
+    {
+	"name" : "Program 0",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "*/10 * * * *",		// Standard cron syntax (*/2 or 1,3,5 etc.)
+	"conditions" : [
+	    ""			                // things like, rain == 1 or WindSpeed > 20
+	],
+	"steps" : [		                // an array of steps (pin, zone and time)
+	    { "port" : "A", "pin" : 1, "zone" : 1, "time" : "2000"},
+	    { "port" : "A', "pin" : 2, "zone" : 2, "time" : "2000"},
+	    { "port" : "A', "pin" : 3, "zone" : 3, "time" : "2000"},
+	    { "port" : "A', "pin" : 4, "zone" : 4, "time" : "2000"},
+	    { "port" : "A', "pin" : 3, "zone" : 3, "time" : "2000"},
+	    { "port" : "A', "pin" : 2, "zone" : 2, "time" : "2000"}
+	]
+    },
+]
+
+Scheduling will need to be handled by a scheduling routine which needs to figure out what needs to be
+done that done (or the net day if handled at 11 PM, for example. The cron model
+
+Cross-reference
+
+Zones are used by the browser application to describe, to the user which zones are running.
+
+The program needs Zones, port and pins to cross reference the zones to
+the device being controlled. (port and pins are used by the Elexol
+IO24 board to issue commands to the board via UDP).
+
+After startup
+
+Event: Timer -> run program
+Event: User  -> respond to user
+
+cron is handled by the node.sched program
+Program: crontab, steps [ { pin, run time }, ... ]
+*/
+// 
+// https://developer.mozilla.org/en-US/docs/JSON

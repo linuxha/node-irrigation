@@ -1,0 +1,133 @@
+{
+    "port":    8022,
+    "ip":      "0.0.0.0",
+    "version": "2.0",
+
+    "uid":     "njc",
+    "gid":     "users",
+
+    "zones":[
+      {
+        "name":  "Zone 1",
+        "zone":  "1",
+	"port":  "A",
+	"pin" :  "0",
+	"state": ""
+      },
+      {
+        "name":  "Zone 2",
+        "zone":  "2",
+	"port":  "A",
+	"pin" :  "1",
+	"state": ""
+      },
+      {
+        "name":  "Zone 3",
+        "zone":  "3",
+	"port":  "A",
+	"pin" :  "2",
+	"state": ""
+      },
+      {
+        "name":  "Zone 4",
+        "zone":  "4",
+	"port":  "A",
+	"pin" :  "3",
+	"state": ""
+      },
+      {
+        "name":  "Zone 5",
+        "zone":  "5",
+	"port":  "A",
+	"pin" :  "4",
+	"state": ""
+      },
+      {
+        "name":  "Zone 6",
+        "zone":  "6",
+	"port":  "A",
+	"pin" :  "5",
+	"state": ""
+      },
+      {
+        "name":  "Zone 7",
+        "zone":  "7",
+	"port":  "A",
+	"pin" :  "6",
+	"state": ""
+      },
+      {
+        "name":  "Zone 8",
+        "zone":  "8",
+	"port":  "B",
+	"pin" :  "7",
+	"state": ""
+      },
+      {
+        "name":  "Zone 9",
+        "zone":  "9",
+	"port":  "B",
+	"pin" :  "1",
+	"state": ""
+      },
+      {
+        "name":  "Zone 10",
+        "zone":  "10",
+	"port":  "B",
+	"pin" :  "2",
+	"state": ""
+      },
+      {
+        "name":  "Zone 11",
+        "zone":  "11",
+	"port":  "B",
+	"pin" :  "3",
+	"state": ""
+      },
+      {
+        "name":  "Zone 12",
+        "zone":  "12",
+	"port":  "B",
+	"pin" :  "4",
+	"state": ""
+      },
+      {
+        "name":  "Zone 13",
+        "zone":  "13",
+	"port":  "B",
+	"pin" :  "5",
+	"state": ""
+      },
+      {
+        "name":  "Zone 14",
+        "zone":  "14",
+	"port":  "B",
+	"pin" :  "6",
+	"state": ""
+      },
+      {
+        "name":  "Zone 15",
+        "zone":  "15",
+	"port":  "B",
+	"pin" :  "7",
+	"state": ""
+      },
+      {
+        "name":  "Zone 16",
+        "zone":  "16",
+	"port":  "B",
+	"pin" :  "8",
+	"state": ""
+      }
+    ],
+
+    "_00:": "Checked with Json Parser Online",
+    "_02:": "1.0",
+    "_03:": "1.0",
+    "_04:": "1.0",
+    "_05:": "1.0",
+    "url":  "http://json.parser.online.fr/",
+
+    "ready":    1,
+    "logLevel": 2
+}

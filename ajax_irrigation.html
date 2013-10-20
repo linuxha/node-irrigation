@@ -1,0 +1,553 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Ajax Sprinkler system</title>
+
+<!-- include the Tools -->
+<script src="/js/jquery.tools.min.js"></script>
+<script src="/js/json2.js"></script>
+<!-- the socket.io library takes care of the socket/socket.io.js -->
+<!-- so there is no need for the file or to modify node.js to    -->
+<!-- include it. -->
+<script src="/socket.io/socket.io.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/css/tabs.css" />
+
+<!-- Definitely need to clean this up a bit and move much of the javascript -->
+<!-- and css into there own files. That will reduce this file by about 1000 -->
+<!-- Lines. -->
+
+<link rel="stylesheet" type="text/css" href="/css/local-tabs.css" />
+<link rel="stylesheet" type="text/css" href="/css/leds.css" />
+<link rel="stylesheet" type="text/css" href="/css/weather.css" />
+<link rel="stylesheet" type="text/css" href="/css/buttons.css" />
+
+<style type="text/css">
+</style>
+
+<script language="Javascript">
+// =============================================================================
+var iosSw = 1;
+
+function ios4Toggle() {
+  if(iosSw == 1) {
+    iosSw = 0;
+  } else {
+    iosSw = 1;
+  }
+
+  console.log("IOS4 Sw: " + iosSw);
+}
+
+// RunToggle
+
+function runToggle() {
+  clicksound.playclip(); // plays one of the multiple files, is the browser support it
+
+  if($("#myonoffswitch").is(":checked")) {
+    socket.emit('Run', { 'message' : 'false'} );
+  } else {
+    socket.emit('Run', { 'message' : 'true'} );
+  }
+}
+
+function setRunToggle(val) {
+  if(val == 'false') {
+    $("#myonoffswitch").attr('checked', false);
+  } else {
+    $("#myonoffswitch").attr('checked', true);
+  }
+}
+
+// #myCheckboxId
+// #myonoffswitch
+// #myonoffswitch
+//
+// $("#myonoffswitch").attr("checked") = 'checked' or undefined
+// $("#myonoffswitch").prop("checked") = true or false
+function unChk() {
+  //console.log("Initial Checked: " + $("#myonoffswitch").attr("checked"));
+  //console.log("Initial Checked: " + $("#myonoffswitch").prop("checked"));
+
+  if($("#myonoffswitch").is(":checked")) {
+  //if($("#myonoffswitch").attr('checked') == "checked") {
+  //if($("#myonoffswitch").attr('checked') == "checked") {
+    console.log("Unchecked: " + $("#myonoffswitch").attr("checked"));
+    // $("#myonoffswitch").prop('checked', false);
+
+    $("#myonoffswitch").attr('checked', false);
+    //socket.emit('message', { 'message' : 'Run false'} );
+    socket.emit('Run', { 'message' : 'false'} );
+  } else {
+    console.log("Checked: " + $("#myonoffswitch").attr("checked"));
+    //$("#myonoffswitch").prop('checked', true);
+
+    $("#myonoffswitch").attr('checked', true);
+    socket.emit('Run', { 'message' : 'true'} );
+    //socket.emit('message', { 'message' : 'Run true'} );
+  }
+  //console.log("Post Checked: " + $("#myonoffswitch").attr("checked"));
+  //console.log("Post Checked: " + $("#myonoffswitch").prop("checked"));
+}
+
+// ============================================================================
+
+// Sound effects
+// http://www.javascriptkit.com/script/script2/soundlink.shtml
+
+// Mouseover/ Click sound effect- by JavaScript Kit (www.javascriptkit.com)
+// Visit JavaScript Kit at http://www.javascriptkit.com/ for full source code
+
+//** Usage: Instantiate script by calling:
+//   var uniquevar=createsoundbite("soundfile1", "fallbackfile2", "fallebacksound3", etc)
+//** Call: uniquevar.playclip() to play sound
+
+var html5_audiotypes = {
+        // define list of audio file extensions and their associated audio types.
+        // Add to it if your specified audio file isn't on this list:
+	"mp3": "audio/mpeg",
+	"mp4": "audio/mp4",
+	"ogg": "audio/ogg",
+	"wav": "audio/wav"
+}
+
+function createsoundbite(sound){
+	var html5audio = document.createElement('audio')
+
+	if (html5audio.canPlayType){ //check support for HTML5 audio
+		for (var i = 0; i < arguments.length; i++){
+			var sourceel = document.createElement('source')
+			sourceel.setAttribute('src', arguments[i])
+			if (arguments[i].match(/\.(\w+)$/i)) {
+				sourceel.setAttribute('type', html5_audiotypes[RegExp.$1]);
+			}
+			html5audio.appendChild(sourceel);
+		}
+		html5audio.load();
+		html5audio.playclip = function() {
+			html5audio.pause();
+			html5audio.currentTime = 0;
+			html5audio.play();
+		}
+		return html5audio
+	} else {
+		return { playclip:function(){throw new Error("Your browser doesn't support HTML5 audio unfortunately")}}
+	}
+}
+
+//Initialize two sound clips with 1 fallback file each:
+
+//var mouseoversound = createsoundbite("whistle.ogg", "whistle.mp3")
+var clicksound = createsoundbite("click.ogg", "click.mp3")
+</script>
+
+<script src="/js/led.js"></script>
+<script src="/js/xmlHttp.js"></script>
+<script src="/js/miniclock.js"></script>
+
+</head>
+
+<body>
+
+<div class="wrap">
+  <!-- the tabs -->
+  <ul class="tabs">
+    <li><a href="#">Sprinkler</a></li>
+    <li><a href="#">Setup</a></li>
+    <li><a href="#">Intro</a></li>
+    <li><a href="#">Debug</a></li>
+  </ul>
+
+  <!-- tab "panes" -->
+  <!-- Sprinkler Main Pane  -->
+  <div class="pane" id="Main">
+    <!-- Sprinkler and Weather stuffs -->
+    <div id="Myweather" class="datapod">
+      <!-- -->
+      <div class="LED_DISPLAY" id="ZoneDisplay">
+      </div>
+<!--
+      <div class="sw">
+        <label class="checkbox toggle candy" onclick="" style="width:100px">
+          <input id="view" type="checkbox" />
+          <p class="butt">
+            Run
+            <span>On</span>
+            <span>Off</span>
+          </p>
+          <a class="slide-button"></a>
+        </label>
+      </div>
+-->
+      <div class="clear"></div>
+
+      <div class="onoffswitch">
+	<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+	<label class="onoffswitch-label" for="myonoffswitch" onclick="runToggle()">
+	  <div class="onoffswitch-inner"></div>
+	  <div class="onoffswitch-switch"></div>
+	</label>
+      </div> 
+
+      <div class="clear"></div>
+      <!-- Ends the Sprinkler Display -->
+      <div id='miniclock'></div>
+<!--
+      <div class="clear"></div>
+
+      <div class="onoffswitch">
+	<input type="checkbox" name="ABnom" class="onoffswitch-checkbox" id="AB" checked>
+	<label class="onoffswitch-label" for="AB" onclick="unChk()">
+	  <div class="onoffswitch-inner"></div>
+	  <div class="onoffswitch-switch"></div>
+	</label>
+      </div>
+      <!--
+	  Probably not a great name gut goo enough for now
+	  The ledStatus div is where the current progress is
+	  // css selector tutorial
+	-->
+      <div id="ledStatus" class="ledStatus"
+	   style="border:1px solid black;border-radius: 2px;padding-left:3px;">
+	Status: <span id="ledStatusSpan" class="ledStatusSpan">blah</span>
+      </div>
+      <div class="clear"></div>
+      <br />
+      <hr/>
+
+      <!-- Weather stuffs -->
+      <div id="dps2" class="datapodspace">
+	<div id="cssWeather">
+	  <div>
+	    <div class="left">
+	      <span id="Icon"></span>
+	    </div>
+	    <div>
+	      <span id="weather"></span>, <span id="temp_f"></span> F
+	      <br /> 
+	      Winds: <span id="wind_string"></span>
+	      <br /> 
+	    </div>
+	  </div>
+	  Humidity: <span id="relative_humidity"></span>
+	  <br />
+	  Feels like: <span id="feelslike_string"></span>
+	  <br />
+	  Visibility: <span id="visibility_mi"></span> mi.
+	  <br />
+	  UV: <span id="UV"></span>
+	  <br />
+	  Report date : <span id="local_time_rfc822"></span>
+	  <br />
+	</div>
+
+	<div id="nowSuns">
+	  <div class="titleSubtle">Sunrise / Set</div>
+	  <div id="sRise"><span id="Sunrise_short" class="b"></span></div>
+	  <div id="sSet"><span id="Sunset_short" class="b"></span></div>
+	</div>
+
+	<div id="nowMoon" class="moonNorth">
+	  <div class="titleSubtle">Moon</div>
+	  <span id="moonPhase"></span>
+	  <div id="mMore">
+	    <a href="/sky/ShowSky.asp?CurDir=Up&TheLat=40.34574127&TheLon=-74.42034149&TimeZoneName=America/New_York">More Astronomy</a>
+	  </div>
+	</div>
+
+	<div class="clear"></div>
+
+	<hr />
+	Forecast:<br/> <span id="Forecast"></span>
+	<br />
+
+	<span id="ob_url"></span>
+	<br />
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Pane -->
+  <div class="pane" id="Setup">
+  <!-- Test Tab -->
+  <div class="wrap">
+ 
+  <!-- the tabs -->
+  <ul class="tabs">
+    <li><a href="#">Cycle</a></li>
+    <li><a href="#">Program</a></li>
+    <li><a href="#">Schedule</a></li>
+  </ul>
+ 
+  <!-- tab "panes" -->
+  <div class="pane">
+    <a href="#" onclick="return mytoggle('T2')" class="mySimple"><img src="/images/plus.gif">Notes</a>
+    <div id="T2" style="display:none;">
+      <hr/>
+      <div class="buttons">
+	<button type="submit" class="positive">
+          <img src="/images/tick.png" alt=""/> 
+          Save
+	</button>
+	<a href="/password/reset/">
+          <img src="/images/textfield_key.png" alt=""/> 
+          Change Password
+	</a>
+	<a href="#" class="negative">
+          <img src="/images/cross.png" alt=""/>
+          Cancel
+	</a>
+      </div>
+      <div class="clear"></div>
+      <hr/>
+
+      <p>References:</p>
+
+      <ul>
+	<li> <a href="https://github.com/FingerSquared/Raspberry-Pi-GPIO-Node-Express-LED-Blink">https://github.com/FingerSquared/Raspberry-Pi-GPIO-Node-Express-LED-Blink</a></li>
+	<li> <a href="http://www.youtube.com/watch?v=bM-micnT0T">http://www.youtube.com/watch?v=bM-micnT0Tw</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pane">Second tab content</div>
+  <div class="pane">Third tab content</div>
+ 
+  </div>
+
+  </div> <!-- Pane -->
+
+  <!-- Intro Pane -->
+  <div class="pane" id="Intro">
+    <a href="#" class="mySimple" onclick="return mytoggle('T1');"><img src="/images/plus.gif">Sprinkler Intro</a>
+    <div id="T1" style="display:none;">
+      <hr/>
+      <h3 align="center">Sprinkler</h3>
+      <p> This will be my sprinkler page </p>
+
+      <p> This page will use node.js on the Pi Server. The web page
+	  will contain a lot of javascript (AJAX) to pull the data
+	  from the node.js server. The node.js will handle the
+	  interface to the in ram db, timers, status and control of
+	  the Pi's GPIO. </p>
+
+      <h3>Thoughts</h3>
+
+      <p> There are two parts of this sprinkler system. The UI via the
+          web page and the node.js controller. </p>
+
+      <h4>UI</h4>
+
+      <p> The UI provides a status of the current system. An interface
+          to the setup of the system. And a way to manual change the
+          current state. </p>
+
+      <p> At the start of the WebPage/UI the application needs to ask
+          the node server to provide it with all the information
+          (JSON). Such as the current status of the controller (what
+          is it doing), the current setup information (cycle, program,
+          zone information). </p>
+
+      <ul>
+	<li></li>
+      </ul>
+
+      <h4>Controller</h4>
+
+      <p> The controller manages the actually goings on. It maintains
+          the schedule and the status and control of the zones. It
+          provides access to zone information, patterns such as
+          odd/even watering, zone order, start times. </p>
+
+      <ul>
+	 <li>Cycle time</li>
+	 <li>Program</li>
+	 <li>Schedule (14 Day schedule)</li>
+      </ul>
+
+<h3> Programming the Lawn Genie R416LG</h3>
+
+<p> These are the programming instructions from the unit itself.</p>
+
+<ol>
+  <li>Set Clock</li>
+  <ol type='a'>
+    <li>Press [CLOCK] </li>
+    <li>Press [NEXT] repeatedly, to change day number (Chart A) </li>
+    <li>Press number keys for time of day </li>
+    <li>Press [AM/PM] </li>
+    <li>Press [GO] </li>
+  </ol>
+
+  <li>Cycle time start</li>
+  <ol type='a'>
+    <li>Press [START TIME] </li>
+    <li>Press number keys for time of day watering is to start </li>
+    <li>Press [AM/PM] </li>
+    <li>Press [ENTER] </li>
+    <li>Press [GO] </li>
+  </ol>
+
+  <li>Station programming and run times</li>
+  <ol type='a'>
+    <li>Press [START PROGM] </li>
+    <li>Press a numbered key for the program number (Chart B) </li>
+    <li>Press numbered keys for watering run time (1-99 min) </li>
+    <li>Press [ENTER] </li>
+    <li>Press [NEXT] </li>
+    <li>Press steps B, C, D and E for each of the remaining 5 stations </li>
+    <li>Press [GO] </li>
+  </ol>
+
+  <li>14 Day programming</li>
+  <ol type='a'>
+    <li>Press [DAY PROGM] </li>
+    <li>Press a numbered key for the program number (Chart C) </li>
+    <li>Press [ENTER] </li>
+    <li>Press [NEXT] </li>
+    <li>Press steps B, C, and D for each of the remaining 13 Days </li>
+    <li>Press [GO] </li>
+  </ol>
+</ol>
+
+
+<ul>
+  <li><strong>Stop watering:</strong> Press [CLEAR]</li>
+  <li><strong>Mistake Entry:</strong> Press [CLEAR]<br/></li>
+
+  <li>Manual watering of a selected station</li>
+  <ol type='a'>
+    <li>Press [MAN] </li>
+    <li>Press [NEXT] repeatedly, to select the station number</li>
+    <li>Press [GO] </li>
+  </ol>
+</ul>
+
+      <pre>
+ [ - ] [ * ] [ - ] [ - ] [ - ] [ - ]
+  (X)   (X)   (X)   (X)   (X)   (X)
+ [ ... Ticker, status ...          ]
+
+ +---------------------------------+
+ | Log entries                     |
+ |  :                              |
+ |  :                              |
+ +---------------------------------+
+      </pre>
+    </div>
+  </div>
+  <div class="pane" id="Debug">
+    <ul>
+      <li> Z1 <div id="z1dbg"></div></li>
+      <li> Z2 <div id="z2dbg"></div></li>
+      <li> Z3 <div id="z3dbg"></div></li>
+      <li> Z4 <div id="z4dbg"></div></li>
+      <li> Z5 <div id="z5dbg"></div></li>
+      <li> Z6 <div id="z6dbg"></div></li>
+    </ul>
+  </div>
+
+  <div class="clear"></div>
+
+  <div id="zTest">
+  </div>
+
+</div>
+
+<!-- This JavaScript snippet activates those tabs -->
+<script>
+  // perform JavaScript after the document is scriptable.
+  $(function() {
+    $("ul.tabs").tabs("> .pane");
+  });
+
+  // This handles my weather stuff and hopefully adapted to deal with the sprinkler sysem
+  var url = "/data/wea-xml.sxml";
+
+  window.onload = function() {
+    xmlHttpGet(url);
+    setInterval("xmlHttpGet(url)", 10000);
+    runMiniClock();
+  }
+
+  var socket = io.connect(); //, {'force new connection': true})
+
+  // We can get messages via io.sockets.emit('message', { 'message' : 'programs updated'} );
+  socket.on('message', function(data){
+    console.log("Message = " + data.message + " [" + JSON.stringify(data) + "]");
+    $("#ledStatusSpan").text(data.message);
+  });
+
+  // io.sockets.emit('On', z); // where z is a JSON object
+  socket.on('On', function(data){
+    console.log("On = " + data.zone + ' (' + JSON.stringify(data) + ')' );
+    ledSet(data.zone, 'On');
+
+    var str = JSON.stringify(data);
+    $("#ledStatusSpan").text(myTimeStamp() + ' ' + data.name + ', Zone : ' + data.zone + ': On'); //, ' + str);
+  });
+
+  // io.sockets.emit('Off', z); // where z is a JSON object
+  socket.on('Off', function(data){
+    console.log("Off = " + data.zone);
+    ledSet(data.zone, 'Off');
+
+    $("#ledStatusSpan").text(myTimeStamp() + ' ' + data.name + ', Zone : ' + data.zone + ': Off'); //, ' + str);
+  });
+
+  socket.on('connect', function(data){
+    console.log("Connect");
+  });
+
+  // Okay, what can I do with this ?
+  socket.on('disconnect', function(){ 
+   // do something, if you want to.
+   console.log("Disconnect");
+  });
+
+  socket.on('Run', function(data){ 
+   // do something, if you want to.
+
+   if(data.message == 'true' || data.message == 'false') {
+     setRunToggle(data.message)
+     console.log("Run: " + data.message);
+   } else {
+     console.log("Garbled Run message: " + data.message);
+   }
+  });
+/*
+  socket.on('disconnect', function(data) {
+    alert('disconnected from server; reconnecting...');
+    // and so on...
+  });
+*/
+/* ========================================================================== */
+
+  // In the future we'll pull this information from a json file, for now, I'll
+  // Just set it
+  var nZones = 16;
+
+  // Okay so we need the number of zones, the name (title) of the zone and it's
+  // zone #, we don't need the rest of the information here.
+  var myHtml ='\n';
+  for(i = 1; i <= nZones; i++) {
+    myHtml += '<div class="led" id="z' + i + '" title="init">' + i + '</div>\n';
+  }
+
+  myHtml += '\n<div class="clear"></div>\n';
+
+  for(i = 1; i <= nZones; i++) {
+    myHtml += '<button class="ledb" type="button" title="Front Lawn" name="z' + i + '" onclick="manualSet(this.name)">Zone ' + i + '</button>\n';
+  }
+
+  myHtml += '\n<div class="clear"></div>\n';
+
+  //$("#zTest").innerHtml(myHtml);
+  $("#ZoneDisplay").html(myHtml);
+
+  //console.log(myHtml);
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+[
+    {
+	"name" : "Program 0",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "*/10 * * * *",
+	"conditions" : [
+	    ""
+	],
+	"steps" : [
+	    { "port" : "B", "pin" : 0, "zone" :  9, "time" : "2500"},
+	    { "port" : "B", "pin" : 1, "zone" : 10, "time" : "2500"},
+	    { "port" : "B", "pin" : 2, "zone" : 11, "time" : "2500"},
+	    { "port" : "B", "pin" : 3, "zone" : 12, "time" : "2500"},
+	    { "port" : "B", "pin" : 4, "zone" : 13, "time" : "2500"},
+	    { "port" : "B", "pin" : 5, "zone" : 14, "time" : "2500"},
+	    { "port" : "B", "pin" : 6, "zone" : 15, "time" : "2500"},
+	    { "port" : "B", "pin" : 7, "zone" : 16, "time" : "2500"}
+	]
+    },
+    {
+	"name" : "Program 1",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "*/3 * * * *",
+	"conditions" : [ 
+            ""
+        ],
+	"steps" : [
+	    { "port" : "A", "pin" : 0, "zone" : 1, "time" : "10000"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "10000"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "10000"},
+	    { "port" : "A", "pin" : 3, "zone" : 4, "time" : "10000"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "10000"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "10000"},
+	    { "port" : "A", "pin" : 5, "zone" : 6, "time" : "10000"},
+	    { "port" : "A", "pin" : 4, "zone" : 5, "time" : "10000"},
+	    { "port" : "A", "pin" : 6, "zone" : 7, "time" : "10000"},
+	    { "port" : "A", "pin" : 7, "zone" : 8, "time" : "10000"}
+	]
+    },
+    {
+	"name" : "Program 2",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "00 9 * * *",
+	"conditions" : [
+            ""
+        ],
+	"steps" : [
+	    { "port" : "A", "pin" : 0, "zone" : 1, "time" : "2500"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 3, "zone" : 4, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "2500"}
+	]
+    },
+    {
+	"name" : "Program 3",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "20,40 10 * * *",
+	"conditions" : [
+            "even = 1"
+        ],
+	"steps" : [
+	    { "port" : "A", "pin" : 0, "zone" : 1, "time" : "2500"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 3, "zone" : 4, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 1, "zone" : 2, "time" : "2500"}
+	]
+    },
+    {
+	"name" : "Program 4",
+	"comment" :"m h dom mon dow command",
+	"crontab" : "30 17 * * *",
+	"conditions" :[
+            "odd = 1"
+        ],
+	"steps" : [
+	    { "port" : "A", "pin" : 1, "zone" : 1, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 2, "time" : "2500"},
+	    { "port" : "A", "pin" : 3, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 4, "zone" : 4, "time" : "2500"},
+	    { "port" : "A", "pin" : 3, "zone" : 3, "time" : "2500"},
+	    { "port" : "A", "pin" : 2, "zone" : 2, "time" : "2500"}
+	]
+    }
+]

@@ -1,0 +1,55 @@
+/* Tabs */
+/* jquerytools.org/demos/tabs/multiple.html */
+/* http://jquerytools.org/demos/tabs/multiple-tabs.htm */
+/* ------------------------------------------------------------------------ */
+
+  div.wrap {
+/*  width:650px; /* */
+    margin-bottom:40px;
+  }
+
+  .wrap .pane  {
+    background:#fff url(/images/h150.png); /* */
+    background-size: 100%;
+    display:none;
+    padding:20px;
+    border:1px solid #999;
+    border-top:0;
+    font-size:14px;
+    font-size:18px;
+    color:#456;
+
+    _background-image:none;
+  }
+
+  .wrap .pane p {
+    margin:-10px 0 -20px 0;
+    text-align:right;
+    color:#578;
+  }
+
+  .wrap .pane div p {
+    margin:18px 0 18px 0;
+    text-align:left;
+    color:black;
+  }
+
+/* ------------------------------------------------------------------------ */
+/* http://jquerytools.org/demos/tabs/multiple.html */
+ .accordion {
+ 
+    /* some decorations for the accordion root element */
+    background:#333 url(/media/img/gradient/h300.png) 0 0;
+    width: 300px;
+    border:1px solid #333;
+ 
+    /* IE6 cannot handle PNG24 backgrounds. use a solid color instead */
+    -background:#666;
+ 
+
+    /* put them side by side */
+    float:left;
+    margin:20px 0 20px 30px;
+}
+
+

@@ -1,0 +1,77 @@
+/* ------------------------------------------------------------------------ */
+
+.led {
+  width:50px;
+  height:50px;
+  border-radius:25px;
+  font-size:16px;
+/*color:#fff; /* */
+  color:yellow;
+  line-height:50px;
+  text-align:center;
+  background:black;
+  float:left;
+  clear: none;
+  margin:3px 5px 1px 1px;
+
+}
+
+.ledOn{
+  width:50px;
+  height:50px;
+  border-radius:25px;
+  font-size:16px;
+/*color:#fff; /* */
+  color:yellow;
+  line-height:50px;
+  text-align:center;
+  background: red;
+  float:left;
+  clear: none;
+  margin:3px 5px 1px 1px;
+
+}
+
+.ledOff {
+  width:50px;
+  height:50px;
+  border-radius:25px;
+  font-size:16px;
+  color:yellow;
+  line-height:50px;
+  text-align:center;
+  background: darkred;
+  float:left;
+  clear: none;
+  margin:3px 5px 1px 1px;
+
+}
+
+.ledb {
+  width:50px;
+/*height:36px; /* */
+  font-family: inherit;
+  font-size:10px;
+  float:left;
+  clear: none;
+  /*
+     Margin is on the outside of block elements while padding is on the inside.
+
+     use margin to separate the block from things outside it, 
+     use padding to move the contents away from the edges of the block
+  */
+  /* T, R, B, L */
+  padding:0px 6px 0px 6px;
+  margin:3px 5px 1px 1px;
+}
+
+.b {
+  float:left;
+  clear: none;
+}
+
+.clear{
+  clear:both;
+  height:0;
+}
+

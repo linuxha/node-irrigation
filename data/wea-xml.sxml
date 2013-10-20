@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<response>
+<TOD>day</TOD>
+1<icon>clear</icon>
+<Icon><![CDATA[<img src="http://mozart.uucp/~njc/html5/icons/wxug.com/k/clear.gif" title="clear">]]></Icon>
+<temp_f>77.5</temp_f>
+<local_time_rfc822>Sun, 25 Aug 2013 12:09:01 -0400</local_time_rfc822>
+<weather>Clear</weather>
+<temperature_string>77.5 F (25.3 C)</temperature_string>
+<temp_f>77.5</temp_f>
+<relative_humidity>51%</relative_humidity>
+<wind_string>Calm</wind_string>
+<wind_mph>0.0</wind_mph>
+<wind_gust_mph>0</wind_gust_mph>
+<wind_dir>SW</wind_dir>
+<pressure_in>30.40 (0)</pressure_in>
+<feelslike_string>77.5 F (26 C)</feelslike_string>
+<visibility_mi>9.0</visibility_mi>
+<UV>9</UV>
+<precip_today_string>0.00 in (0 mm)</precip_today_string>
+<precip_today_in>0.00</precip_today_in>
+<ob_url><![CDATA[<a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=40.334118,-74.416176" target="_blank">Extended Forecast</a>]]></ob_url>
+<Forecast><![CDATA[Sunday: Clear. High of 84F. Winds less than 5 mph.<br />Sunday Night: Clear in the evening, then partly cloudy. Low of 57F. Winds less than 5 mph.]]></Forecast>
+<advisory>Not Array Borkened</advisory>
+<advisory>There are no active watches, warnings or advisories</advisory>
+<advisory-updated>2013-08-25T16:09:01+00:00</advisory-updated>
+<advisory-link><![CDATA[<a href="" target="_blank"></a>]]></advisory-link>
+<advisory-link-1>http://alerts.weather.gov/cap/nj.atom</advisory-link-1>
+<advisory-summary>There are no active watches, warnings or advisories</advisory-summary>
+<Sunrise_short>6:18 AM</Sunrise_short>
+<Sunrise>Sun Aug 25 06:18:01 EDT 2013</Sunrise>
+<Sunrise_sec>1377425881</Sunrise_sec>
+<Sunset_short>7:40 PM</Sunset_short>
+<Sunset>Sun Aug 25 19:40:01 EDT 2013</Sunset>
+<Sunset_sec>1377474001</Sunset_sec>
+<PhaseOfTheMoon>Waning Gibbous (80% of Full)</PhaseOfTheMoon>
+<moonPhase><![CDATA[<div id="mPhase" class="WaningGibbous">Waning Gibbous (80% of Full)</div>]]></moonPhase>
+</response>

@@ -1,0 +1,140 @@
+/* ------------------------------------------------------------------------ */
+.left {
+  float:left;
+  clear: none;
+  padding:3px 5px 2px 2px;
+}
+
+.titleSubtle{
+  font-size:11px;
+  font-weight:normal;
+  color:#666;
+}
+
+#cssWeather{
+  float:left;
+  width:400px;
+  padding:7px 10px 10px 10px;
+  background:url(http://mozart.uucp/weather/tickDownSmall.png) no-repeat top left;
+  clear: none;
+}
+
+/* ------------------------------------------------------------------------ */
+
+#nowWind{
+  float:left;
+  width:72px;
+  padding:7px 10px 10px 10px;
+  background:url(http://mozart.uucp/weather/tickDownSmall.png) no-repeat top left;
+}
+#nowWind #windCompassContainer{
+  margin-top:-1px;
+  margin-left:-6px;
+  overflow:hidden;
+  width:62px;
+  height:64px;
+}
+#nowWind #windCompass{
+  display:block;
+  width:62px;
+  height:64px;
+  background:url(http://mozart.uucp/weather/windCompass64.png) no-repeat;
+  background-position:0 0;
+}
+#nowWind #windCompassSpeed{
+  font-size:14px;
+  display:block;
+  text-align:center;
+  font-weight:bold;
+  position:relative;
+  top:-39px;
+  width:62px;
+  z-index:100;
+}
+
+/* ------------------------------------------------------------------------ */
+
+#nowSuns{
+  /* font-size:14px;/* */
+  float:left;
+  width:97px;
+  padding:7px 10px 10px 10px;
+  background:url(http://mozart.uucp/weather/tickDownSmall.png) no-repeat top left;
+  clear: none;
+}
+#nowSuns #sRise{
+  margin-top:11px;
+  height:12px;
+  background:url(http://mozart.uucp/weather/miniAstronomy.png) no-repeat;
+  background-position:0 0;
+  padding-left:17px;
+}
+#nowSuns #sSet{
+  margin-top:5px;
+  height:12px;
+  background:url(http://mozart.uucp/weather/miniAstronomy.png) no-repeat;
+  background-position:0 -13px;
+  padding-left:17px;
+}
+
+/* ------------------------------------------------------------------------ */
+
+#nowMoon{
+  font-size:11px; /* */
+  float:left; /* */
+  width:153px;
+  padding:7px 10px 10px 10px;
+  background:url(http://mozart.uucp/weather/tickDownSmall.png) no-repeat top left;
+}
+#nowMoon #mMore{
+  margin-top:5px;
+  height:12px;
+  padding-top:17px;
+  padding-left:17px;
+}
+#nowMoon #mPhase{
+  margin-top:11px;
+  height:12px;
+  padding-left:17px;
+  background-image:url(http://mozart.uucp/weather/miniAstronomy.png);
+  background-repeat:no-repeat;
+}
+
+/*
+ Phases:
+
+firstqtr
+full
+lastqtr
+new
+waningcrescent
+waninggibbous
+waxingcrescent
+waxinggibbous
+
+*/
+.moonNorth .pfirstqtr{
+  background-position:0 -78px;
+}
+.moonNorth .Full{
+  background-position:0 -104px;
+}
+.moonNorth .plastqtr{
+  background-position:0 -26px;
+}
+.moonNorth .New{
+  background-position:0 -52px;
+}
+.moonNorth .WaningCrescent{
+  background-position:0 -39px;
+}
+.moonNorth .WaningGibbous{
+  background-position:0 -117px;
+}
+.moonNorth .WaxingCrescent{
+  background-position:0 -65px;
+}
+.moonNorth .WaxingGibbous{
+  background-position:0 -91px;
+}
+
