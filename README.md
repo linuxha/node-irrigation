@@ -54,7 +54,9 @@ program.
 - [ ] Provide device other interfaces (current uses the Elexol Ether IO board)
 - [ ] Need the initialization routine setup for the Elexol Ether IO board
 - [ ] device heartbeat (optional)
-- [ ] Documentation, at this moment the documentation is rather weak.
+- [ ] Documentation, at this moment the documentation is rather weak (need to add info on usage & /status for instance).
+- [ ] Need to move hard coded device settings into the irrigation.json file
+- [ ] Fix the favicon.ico, I think it's the icon for the The Register (a vulture) - no idea how I did that.
 
 ## Notes
 
