@@ -49,7 +49,7 @@ program.
 - [ ] Add better status information handling to the browser (that way everything won't need to be sent to the syslog.
 - [ ] Add signal handling so we can change the debug level (I may want to consider adding this as a event sent from the bowser 
 - [ ] User interface (currently you have to edit json files to configure the program)
-- [ ] External conditions
+- [x] External conditions
 - [ ] Move device interface outside of the main node-irrigation.js file
 - [ ] Provide device other interfaces (current uses the Elexol Ether IO board)
 - [ ] Need the initialization routine setup for the Elexol Ether IO board
@@ -57,6 +57,7 @@ program.
 - [ ] Documentation, at this moment the documentation is rather weak (need to add info on usage & /status for instance).
 - [ ] Need to move hard coded device settings into the irrigation.json file
 - [ ] Fix the favicon.ico, I think it's the icon for the The Register (a vulture) - no idea how I did that.
+- [ ] need to (learn and) add testing
 
 ## Notes
 
@@ -113,11 +114,55 @@ programs.json - provides the device mapping (here port and pon) to the Irrigatio
 
 wea-xml.sxml - used by the index.html to pull back weather information related to this location. This information can be pulled back by an external cron job (need to provide the script as an example).
 
+## External conditions (extCnds.json and programs.json)
+
+Sometime it is necessary to put externally controlled conditions on a irrigation program, such as a temperature or wind speed limit. These conditions can be added to the extCnds.json file with JSON entries such as this:
+
+    {
+      "ready" : 1,
+      "test" : 2,
+      "bad" : 0,
+      "Temperature" : 47.2
+    }
+
+And by adding the conditional to the conditions section of the programs.json like this:
+
+    {
+      "name" : "Program 1",
+      "comment" :"m h dom mon dow command",
+      "crontab" : "*/3 * * * *",
+      "conditions" : [ 
+         "extCnds.Temperature > 50",
+         "extCnds.bad == 0"
+      ],
+      "steps" : [
+
+Note that the conditional variable has 'extCnds.' prepended to the variable. Also the variable is case sensitive. 
+
+The following conditionals are supported:
+
+    ==
+    === I think this is what we need
+ 
+    !=
+    !== I think this is what we need
+
+    <
+    <=
+    >
+    >=
+
+    (condition) || (condition)
+    (condition) && (condition)
+    !(condition)
+
+The extCnds.json (found in data/exCnds.json) file can be updated with an editor or an external program (I like to use Perl for this).
+
 ## Dependencies
 
 ### System builtins
 http
-sys
+util
 url
 querystring
 fs
