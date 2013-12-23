@@ -32,7 +32,7 @@
 ** ---------------------------------------------------------------------------
 **
 ** @author      Neil Cherry <ncherry@linuxha.com>
-** @version     0.1 (alpah)
+** @version     0.1 (alpha)
 ** ---------------------------------------------------------------------------
 */
 
@@ -43,7 +43,7 @@
 // The first thing you need to do is load the modules required for your app,
 // in this case we need the http, sys, url, querystring, and fs modules.
 var http   = require("http");
-var sys    = require("util");
+var util   = require("util");
 var url    = require("url");
 var qs     = require("querystring");
 var fs     = require("fs");
@@ -94,7 +94,7 @@ var serverOptions = {
 */
 
 var userCount = 0;
-var run = true;
+var run = true;			// Run/Stop flag
 
 // Future (to replace Etherio)
 //var dev = require('Device');
@@ -109,7 +109,7 @@ var run = true;
 ** @returns	string
 */
 function dec2hex(i) {
-	return (i+0x100).toString(16).substr(-2).toUpperCase();
+    return (i+0x100).toString(16).substr(-2).toUpperCase();
 }
 // ----------------------------------------------------------------------------
 
@@ -141,6 +141,7 @@ Etherio = function(ip, port) {
 
     // Note that we haven't connected to the device yet
     this.client = dgram.createSocket("udp4");
+
     // http://stackoverflow.com/questions/6475842/node-js-udp-dgram-handling-error-from-dns-resolution
     // listen for the error (hopefully this will resolve the issue of the uncaught dns error)
     this.client.on("error", function (err) {
@@ -154,25 +155,25 @@ Etherio = function(ip, port) {
 
     // Technically, since it's UDP, we never connect to the device but when a
     // packet is sent it's done in the on, off and ping methods
-    
+
     /*
     ** TODO: Need to add the device init sequence here.
-	**
+    **
     ** set the IO ports to Out
     **
     ** # 0 for output
     ** # 1 for input
     ** #
     ** # echo -e '!A\x00!B\x00!C\x00' | nc -w 2 -u etherio24.uucp 2424 | od -x
-	** 0000000
-	** send A\x00 B\x00 C\x00
-	** recv nothing
-	** # echo -e '!a!b!c' | nc -w 2 -u etherio24.uucp 2424 | od -x
-	** 0000000 0a43 4121 2100 0042 4321 0000
-	** 0000013
-	** A = 41
+    ** 0000000
+    ** send A\x00 B\x00 C\x00
+    ** recv nothing
+    ** # echo -e '!a!b!c' | nc -w 2 -u etherio24.uucp 2424 | od -x
+    ** 0000000 0a43 4121 2100 0042 4321 0000
+    ** 0000013
+    ** A = 41
     */
-};
+}
 
 /**
 ** on - turns on a particular Elexol EtherIO port/pin combination
@@ -196,7 +197,7 @@ Etherio.prototype.on = function(zone) {
     data.write('\n', 2);
 
     this.client.send(data, 0, data.length, this.port, this.ip);
-};
+}
 
 /**
 ** off - turns on a particular Elexol EtherIO port/pin combination
@@ -212,7 +213,6 @@ Etherio.prototype.off = function(zone) {
     val                  = this.zone[zone.port] & val;  // Turn off the bit and leave on the existing bits
     this.zone[zone.port] = val;                         // Turn off the bit and leave on the existing bits
 
-
     data = new Buffer(3);
 
     data.write(zone.port, 0);
@@ -223,7 +223,7 @@ Etherio.prototype.off = function(zone) {
     logger.info(data);
 */
     this.client.send(data, 0, data.length, this.port, this.ip);
-};
+}
 
 /**
 ** ping - validates that the Elexol Ether IO device is available 
@@ -246,7 +246,7 @@ Etherio.prototype.ping = function() {
 // I've switched from node-cron to node-sched
 // Hopeully this will resolve the timer issues (node-cron fails to run cron jobs
 // if I use a setTimeout inside the job
-// Problem solved, not a node-cron problem but the way I build my CB
+// Problem solved, not a node-cron problem but the way I build my callback
 
 var schedule = require('node-schedule');
 
@@ -273,11 +273,6 @@ var extCnds = {
 };
 
 var job = [];
-
-var fauxStatusPath = "data/fauxStatus.json";
-var fauxStatus = {
-    "ready" : 0
-};
 
 var status = {
     "ready" : 0,
@@ -404,6 +399,21 @@ programs = loadJSON(programsPath);
 logger.info("Programs ready: " + programs.ready);
 
 extCnds  = loadJSON(extCndsPath);
+// Need to do a check on the external conditions
+// = should be == need to correct when read in
+//
+// ==
+// === I think this is what we need
+//
+// !=
+// !== I think this is what we need
+//
+// <
+// <=
+// >
+// >=
+//
+// extCnds = verifyConditions(extCnds);
 
 logger.info("JSON loads done");
 
@@ -443,45 +453,7 @@ fs.watch(extCndsPath, function(action, filename) {
     }
 });
 
-/*
-** This is temporary, it's so I can force a change and send it to the UI
-*/
-fs.watch(fauxStatusPath, function(curr,prev) {
-    // NJC read the data now
-    fs.readFile(fauxStatusPath, function(err, data) {
-        if (err) {
-        // Hmm, really need to put a 404 here
-        sys.puts("Error loading " + fauxStatusPath);
-        } else {
-            data = data.toString();
-            data = data.replace(/(\n|\r)/gm,"");
-            logger.info("Dumping " + fauxStatusPath + " (" + data + ")");
-            /*
-              But wait, isn't it Node.js convention to not use try-catch?
-
-              In the core node.js libraries, the only place that one
-              really needs to use a try-catch is around
-              JSON.parse(). All of the other methods use either the
-              standard Error object through the first parameter of the
-              callback or emit an error event. Because of this, it is
-              generally considered standard to return errors through
-              the callback rather than to use the throw statement.
-            */
-            try {
-                io.sockets.emit('message', { 'message' : JSON.parse(data) });
-                io.sockets.emit('message', { 'message' : 'fauxStatus.json updated'} );
-            }
-            catch(e) {
-                // When we're not connected we see this:
-                // Thu Jun 20 2013 10:50:00 AM: Oops: TypeError: Cannot call method 'emit' of undefined
-                logger.info("Oops: " + e);
-            }
-        }
-    });
-});
-
-/* */
-// watching the programs.jsn file (reload when updated)
+// watching the programs.json file (reload when updated)
 // This needs to be setup to be reloaded when there is a change on the file.
 fs.watch(programsPath, function(action, filename){ // fs.watchFilename(file, function(curr,prev) { });
     logger.info("action: "  + action);
@@ -658,10 +630,70 @@ var SrvRdy = function SrvRdy() {
                 socket.broadcast.emit('Run',  { 'message' : 'false' });
                 // @FIXME: We need to emit a 'Stop' message so we can properly cleanup any running cronjobs
                 // ... so what do we have running when this occurs ?
+
+		// Okay first thing I want to do is to dump the current running
+		// program(s) [ function on(curProgram, nthStep) ]
+		// status.zones[curProgram.steps[nthStep].zone-1].state = 1;
+		logger.info("Stop, status:  " + JSON.stringify(status.zones));
+		/*
+		** Dec 21 22:47:15 Mozart irrnode[5723](1): Run = false [{"message":"false"}]
+		** Dec 21 22:47:15 Mozart irrnode[5723](1):
+		** Stop, status:  [
+		**   {"name":"Zone 1","zone":"1","port":"A","pin":"0","state":0,"device":{"port":"A","pin":"0"}},
+		**   {"name":"Zone 2","zone":"2","port":"A","pin":"1","state":0,"device":{"port":"A","pin":"1"}},
+		**   {"name":"Zone 3","zone":"3","port":"A","pin":"2","state":0,"device":{"port":"A","pin":"2"}},
+		**   {"name":"Zone 4","zone":"4","port":"A","pin":"3","state":0,"device":{"port":"A","pin":"3"}},
+		**   {"name":"Zone 5","zone":"5","port":"A","pin":"4","state":0,"device":{"port":"A","pin":"4"}},
+		**   {"name":"Zone 6","zone":"6","port":"A","pin":"5","state":0,"device":{"port":"A","pin":"5"}},
+		**   {"name":"Zone 7","zone":"7","port":"A","pin":"6","state":0,"device":{"port":"A","pin":"6"}},
+		**   {"name":"Zone 8","zone":"8","port":"B","pin":"7","state":0,"device":{"port":"B","pin":"7"}},
+		**   {"name":"Zone 9","zone":"9","port":"B","pin":"1","state":0,"device":{"port":"B","pin":"1"}},
+		**   {"name":"Zone 10","zone":"10","port":"B","pin":"2","state":0,"device":{"port":"B","pin":"2"}},
+		**   {"name":"Zone 11","zone":"11","port":"B","pin":"3","state":0,"device":{"port":"B","pin":"3"}},
+		**   {"name":"Zone 12","zone":"12","port":"B","pin":"4","state":0,"device":{"port":"B","pin":"4"}},
+		**   {"name":"Zone 13","zone":"13","port":"B","pin":"5","state":0,"device":{"port":"B","pin":"5"}},
+		**   {"name":"Zone 14","zone":"14","port":"B","pin":"6","state":0,"device":{"port":"B","pin":"6"}},
+		**   {"name":"Zone 15","zone":"15","port":"B","pin":"7","state":0,"device":{"port":"B","pin":"7"}},
+		**   {"name":"Zone 16","zone":"16","port":"B","pin":"8","state":0,"device":{"port":"B","pin":"8"}}
+		** ]
+		*/
+
+		// Status: 1:43:34 PM Program 1, Zone : 8: Off <- Normal off
+		// Status: 1:43:34 PM Undefined, Zone : 8: Off <- Stop
+		/* */
+		for(i = 0; i < status.zones.length; i = i + 1) {
+		    if(status.zones[i].state) {
+			var z = {};
+			// only need the zones, port and pin passed
+			z.name = "Stop";
+			z.zone = status.zones[i].zone;
+			z.port = status.zones[i].port;
+			z.pin  = status.zones[i].pin;
+
+			logger.info("Stop:  " + JSON.stringify(z));
+
+			eio.off(z);
+			status.zones[i].state = 0;
+			// also need to send an update to the browser to turn
+			// off the status LEDs
+
+			// This helps fix the emit errors which would occurr
+			// when no client's were connected
+			if(userCount >  0) {
+			    try {
+				io.sockets.emit('Off', z);
+			    }
+			    catch(e) {
+				logger.info("Oops-off: " + e + " (" + userCount + ")");
+			    }
+			}
+		    }
+		}
+		/* */
             }
         });
 
-        socket.on('disconnect', function() {
+        socket.on('disconnect', function() { // this code is in irrnode.js
             var address = socket.handshake.address;
             --userCount;
             logger.info("Disconnect from " + address.address + ":" + address.port + " (" + userCount + ")");
@@ -691,6 +723,39 @@ var SrvRdy = function SrvRdy() {
 
 eventEmitter.once('SrvReady', SrvRdy); //
 
+/*
+** I'm trying to keep this simple, check the condition, if true test the
+** next condition. If false return right away (a false makes an OR logic false).
+*/
+function conditionsCheck(conditionsArray) {
+    // Check for the run state
+    if(run != true) {
+	logger.info("Run: " + run);
+	return false;
+    }
+
+    // conditionsArray contains an array of conditions that must meet true to continue
+    // loop through the conditions while true
+    for(var i = 0; i < conditionsArray.length; i++) {
+	// We need to skip blank lines or undefined/empty entries (done)
+	// If empty or undefined or comment (not done)
+	if(!((conditionsArray[i] == undefined) || (conditionsArray[i] == ''))) {
+	    // Okay these should be something we can eval ('' and undefined eval false)
+	    try {
+		if(!eval(conditionsArray[i])) {
+		    logger.info("Eval: false, " + conditionsArray[i] + " (" + i + ") " + extCnds);
+		    return false;
+		}
+	    }
+	    catch(e) {
+		logger.info("Catch: false, " + conditionsArray[i] + " (" + i + ")");
+		return false;
+	    }
+	}
+    }
+    return true;
+}
+
 // ---------------------------------------------------------------------------
 // When we turn on Zone x we need to turn off the zone in the previous step
 // and we need to update the status and tell the user and the GPIO
@@ -703,7 +768,7 @@ function on(curProgram, nthStep) { // curProgram, nthStep
         off(curProgram, nthStep-1);
     }
 
-    if(run === true) {
+    if(conditionsCheck(curProgram.conditions)) {
     	/**
     	***  Technically there could be more than one Zone & Program running at
     	***  the same time.
@@ -735,7 +800,7 @@ function on(curProgram, nthStep) { // curProgram, nthStep
             }
         }
     } else {
-        io.sockets.emit('message',  { 'message' : 'Run false' }); //
+	io.sockets.emit('message',  { 'message' : 'Conditions false, ' + "Run == " + run + "," + curProgram.conditions}); //
     }
 }
 
@@ -806,6 +871,8 @@ function myJobRun(curProgram, nthStep) {
 function cronSched(prog) {
     var myJob = schedule.scheduleJob(prog.crontab, function() {
         logger.info("Cronjob run: " + prog.name + ' (' + prog.steps.length + ')');
+	status.current[prog.name] = { "name" : prog.name, "zone" : '' };
+
         myJobRun(prog, 0);
     });
 
@@ -853,7 +920,6 @@ function monitor(){
 
     // Connections
     logger.info("Users: " + "n (list follows)");
-
 }
 
 schedule.scheduleJob("0 * * * *", function() {
@@ -960,7 +1026,7 @@ var urlMap = {
 
 
     '/css/tabs.css' : function (req, res) {
-        fs.readFile("css/tabs.css", function(err, data)                                                  {
+        fs.readFile("css/tabs.css", function(err, data) {
             if (err) {
                 logger.info("Error loading " + "tabs.css");
             } else {
