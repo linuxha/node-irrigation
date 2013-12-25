@@ -58,6 +58,7 @@ program.
 - [ ] Need to move hard coded device settings into the irrigation.json file
 - [ ] Fix the favicon.ico, I think it's the icon for the The Register (a vulture) - no idea how I did that.
 - [ ] need to (learn and) add testing
+- [ ] add sample Perl scripts which pull back weather details
 
 ## Notes
 
@@ -137,7 +138,7 @@ And by adding the conditional to the conditions section of the programs.json lik
       ],
       "steps" : [
 
-Note that the conditional variable has 'extCnds.' prepended to the variable. Also the variable is case sensitive. 
+Note that the conditional variable has 'extCnds.' prepended to the variable. Also the variable is case sensitive. If a conditional statement exists in the program but is not defined in the extCnds.json file it will evaluate as a false and stop the irrigation program from running.
 
 The following conditionals are supported:
 
@@ -187,8 +188,8 @@ GPLv2
 
 ## References
 
-http://www.elexol.com
-http://www.elexol.com/IO_Modules/Ether_IO_24.php
-http://www.elexol.com/IO_Modules/USB_IO_24.php
-http://www.cainetworks.com/products/webcontrol/index.html
-http://www.raspberrypi.org/
+- http://www.elexol.com
+- http://www.elexol.com/IO_Modules/Ether_IO_24.php
+- http://www.elexol.com/IO_Modules/USB_IO_24.php
+- http://www.cainetworks.com/products/webcontrol/index.html
+- http://www.raspberrypi.org/
