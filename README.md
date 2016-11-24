@@ -1,4 +1,4 @@
-## irrnode
+## node-irrigation
 Irrnode is an irrigation control server used to control digital IO such as direct
 IO on a Raspberry Pi or remote IO such as on an Elexol Ether IO24 board (via UDP).
 This IO is then connected to sprinkler head valves. The program allows the user to
@@ -15,6 +15,8 @@ Status
 Current weather report, sun rise, sun set and phase of the moon
 and day's weather forecast
 
+This program depends alot on external data. I get that data through external scripts (Bash, Perl, Python and Node.js). I'm going to have to dig through my collection and add those programs here so it's a lot easier to follow this program. At the moment there's a lot missing from this repos, such as the icons and the previously mentioned scripts. Also, this was my first attempt at node.js and async programming. I'm seeing a lot of kruft and amateurish code. I'll need to refactor it when I get time. Unfortunately this program grew from a simple idea to a complex collection of feaping-creaturisms (feature creep).
+
 ## Objective
 
 My motivation is two-fold. First is to replace the ancient irrigation control we
@@ -26,6 +28,7 @@ running Linux and external IO (the Elexol Ether IO board). One of the features
 I want is a web interface and access to external information to allow certain
 conditions to be met to allow the schedule to run. Another is the use of cron
 like schedule syntax for flexibility. 
+
 
 ## Usage
 ```JavaScript
@@ -51,14 +54,16 @@ program.
 - [ ] User interface (currently you have to edit json files to configure the program)
 - [x] External conditions
 - [ ] Move device interface outside of the main node-irrigation.js file
-- [ ] Provide device other interfaces (current uses the Elexol Ether IO board)
+- [ ] Provide other device interfaces (current uses the Elexol Ether IO board)
 - [ ] Need the initialization routine setup for the Elexol Ether IO board
 - [ ] device heartbeat (optional)
 - [ ] Documentation, at this moment the documentation is rather weak (need to add info on usage & /status for instance).
 - [ ] Need to move hard coded device settings into the irrigation.json file
 - [ ] Fix the favicon.ico, I think it's the icon for the The Register (a vulture) - no idea how I did that.
 - [ ] need to (learn and) add testing
-- [ ] add sample Perl scripts which pull back weather details
+- [ ] add sample scripts which pull back weather details
+- [ ] remove absolute URLs from the css file (all are pointing to http://mozart.uucp/)
+- [ ] refactor this code
 
 ## Notes
 
@@ -179,9 +184,13 @@ daemon
 // Device (not moved out of the main node-irrigation.js yet)
 node-schedule
 
+### Dev
+mocha
+
 ## Tests
 
 ## Contributors & Credits
+I have no idea where I stole half this code from. ;-)
 
 ## License
 GPLv2
