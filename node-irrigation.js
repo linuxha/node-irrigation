@@ -32,7 +32,7 @@
 ** ---------------------------------------------------------------------------
 **
 ** @author      Neil Cherry <ncherry@linuxha.com>
-** @version     0.1 (alpha)
+** @version     0.1.0 (alpha)
 ** ---------------------------------------------------------------------------
 */
 
@@ -396,7 +396,7 @@ Error: EPERM, Operation not permitted
 status.zones   = config.zones;
 
 programs = loadJSON(programsPath);
-logger.info("Programs ready: " + programs.ready);
+//logger.info("Programs ready: " + programs.ready);
 
 extCnds  = loadJSON(extCndsPath);
 // Need to do a check on the external conditions
@@ -423,12 +423,15 @@ logger.info("Created new EtherIO");
 // ---------------------------------------------------------------------------
 // This re-reads the extCnds.json file each time it changes. But not at startup
 // this is because the file hasn't changed yet
-fs.watch(extCndsPath, function(action, filename) {
+var w;
+var watcher = function(action, filename) {
     logger.info("action: "   + action);
     logger.info("filename: " + filename);
     logger.info("filename: " + extCndsPath);
 
     if(action == "change") {
+	// vi changes (just an example)
+
         // What we need to do is to clone the original, load the new
         // and if there was an error reload the original
         var newObject = JSON.parse(JSON.stringify(extCnds));
@@ -450,12 +453,28 @@ fs.watch(extCndsPath, function(action, filename) {
             extCnds = JSON.parse(JSON.stringify(newObject));
             logger.info(JSON.stringify(extCnds));
         }
+    } else if(action == 'rename') {
+	// sed renames the file
+	// ... but we're seeing both change and rename (???)
+	w.close();
+	w = fs.watch(extCndsPath, function(action, filename) {
+	    watcher(action, filename);
+	});
+	monitor();
+    } else {
+	// We might run into something else
+
+	console.log("fs.watch(extCnds, ... something else: " + action);
     }
+}
+
+w = fs.watch(extCndsPath,function(action, filename) {
+    watcher(action, filename);
 });
 
 // watching the programs.json file (reload when updated)
 // This needs to be setup to be reloaded when there is a change on the file.
-fs.watch(programsPath, function(action, filename){ // fs.watchFilename(file, function(curr,prev) { });
+var watch = fs.watch(programsPath, function(action, filename){ // fs.watchFilename(file, function(curr,prev) { });
     logger.info("action: "  + action);
     logger.info("filename: " + filename);
 
@@ -502,6 +521,8 @@ fs.watch(programsPath, function(action, filename){ // fs.watchFilename(file, fun
             logger.info("Oops: " + e);
             programs = JSON.parse(JSON.stringify(newObject));
         }
+    } else {
+	console.log("fs.watch(extCnds, ... something else: " + action);
     }
 });
 /* */
